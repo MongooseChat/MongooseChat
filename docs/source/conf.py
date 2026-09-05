@@ -14,9 +14,10 @@ author = 'Kialae/Eleven, Puddle'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    'sphinxcontrib.luadomain',
     'sphinx_lua',
     'sphinx_rtd_theme',
-              ]
+]
 
 templates_path = ['_templates']
 exclude_patterns = []
