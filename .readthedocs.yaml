@@ -14,7 +14,7 @@ build:
     - luarocks
   jobs:
     post_install:
-      - sudo luarocks install ldoc
+      - luarocks install ldoc --local
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
