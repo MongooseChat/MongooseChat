@@ -15,7 +15,7 @@ author = 'Kialae/Eleven, Puddle'
 
 extensions = [
     'sphinx_lua',
-    'sphinx_rdt_theme',
+    'sphinx_rtd_theme',
               ]
 
 templates_path = ['_templates']
