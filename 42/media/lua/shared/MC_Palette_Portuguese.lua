@@ -1,0 +1,235 @@
+-- MC_Babble palette: Portuguese
+-- Romance family. Phonological signature: the nasal endings (-ao/-a-tilde/-o-tilde)
+-- that are unmistakably Portuguese, the c-cedilla + -cao suffix, the lh/nh
+-- palatals, and the Latinate -dade/-mente tail. family = "romance", so the
+-- Connection bonus links Portuguese with French, Spanish, and Italian.
+--
+-- Identity: Brazilian Portuguese. Orthography keeps the nasals (a-tilde, o-tilde,
+-- the -ao diphthong), the c-cedilla, and the acute/circumflex/grave accents, all
+-- byte-escaped (\NNN) like the French/Spanish palettes.
+
+local portuguese = {
+    name   = "Portuguese",
+    family = "romance",
+
+    -- Tuning dials -- see MC_Babble.lua header. Words end in a vowel, a nasal
+    -- (-ao/-a-tilde or written -m), or -s/-r; the nasal-diphthong nuclei carry
+    -- the signature tell. featuredSignatureCount 1 + a gentle boost.
+    tuning = {
+        lettersPerSyllable     = 3,
+        onsetChance            = 0.72,
+        midCodaChance          = 0.3,
+        endingPoolChance       = 0.22,
+        functionWordChance     = 0.4,
+        elisionPrefixChance    = 0,
+        signatureBoostWeight   = 2,
+        featuredSignatureCount = 1,
+    },
+
+    onsets = {
+        "b", "c", "d", "f", "g", "j", "l", "m", "n", "p", "r", "s", "t", "v", "z",
+        "lh", "nh", "ch", "rr",                      -- lh/nh palatals, ch, rolled rr
+        "pr", "tr", "br", "cr", "gr", "fr", "pl", "fl",   -- obstruent+liquid clusters
+    },
+
+    nuclei = {
+        -- Pure vowels dominate; a/e/o 4x, i 3x, u 2x.
+        "a", "a", "a", "a", "e", "e", "e", "e", "i", "i", "i", "o", "o", "o", "o", "u", "u",
+        -- Oral diphthongs.
+        "ei", "ai", "ou", "ia", "io",
+        -- Nasal vowels/diphthong -- the signature tell (a-tilde+o, a-tilde, o-tilde).
+        "\195\163o", "\195\163", "\195\181",
+        -- Stress accents (a-acute, o-acute, e-circumflex).
+        "\195\161", "\195\179", "\195\170",
+    },
+
+    codas = {
+        -- Vowel/nasal endings dominate; -s is the plural, -m the written nasal
+        -- (bem/sim/bom), -r the infinitive tail. Empty weighted heavily so most
+        -- words stay vowel/nasal-final.
+        "", "", "", "", "s", "m", "r",
+    },
+
+    functionWords = {
+        "o", "a", "os", "as", "um", "uma", "de", "do", "da", "e",
+        "que", "em", "com", "por", "para", "n\195\163o", "se", "na", "no", "\195\169",
+    },
+
+    -- Hesitation fillers (see MC_Palette_Turkish for schema docs).
+    fillers = {
+        "ent\195\163o",  -- "então: so / then" -- the universal filler
+        "tipo",          -- "like / sort of"
+        "sei l\195\161", -- "sei lá: I dunno" -- trailing-off marker
+    },
+
+    -- Signature set. Nasal nuclei carry the -ao tell; the coda suffixes are
+    -- consonant-initial and attach cleanly (a + cao -> "acao", a + dade -> "adade").
+    signatureSet = {
+        -- The nasal-diphthong nuclei + the -cao/-dade/-mente suffixes ARE the
+        -- Portuguese tell. lh/nh/ch stay in the onset pool at base rate but are
+        -- deliberately NOT boosted here -- boosting them oversupplies word-initial
+        -- nh-/lh-, which are intervocalic-only in real Portuguese.
+        nasalTail        = { category = "nucleus", elements = {"\195\163o", "\195\163", "\195\181"} },
+        latinateSuffixes = { category = "coda",    elements = {"\195\167\195\163o", "dade", "mente"} },  -- -cao, -dade, -mente
+    },
+
+    -- Mishearing rules (babble-resolve). Palatals flatten, the cedilla and nasals
+    -- denasalise/flatten, accents drop. DRAFT -- for review. See docs/BABBLE_RESOLVE.md.
+    mishearing = {
+        { "lh", "l" }, { "nh", "n" }, { "ch", "s" }, { "rr", "r" },        -- palatals/trill flatten
+        { "\195\167", "s" },                                                -- c-cedilla -> s
+        { "\195\163", "a" }, { "\195\181", "o" },                          -- a-tilde -> a, o-tilde -> o (denasalise)
+        { "\195\161", "a" }, { "\195\169", "e" }, { "\195\173", "i" },      -- acute accents
+        { "\195\179", "o" }, { "\195\186", "u" },
+        { "\195\162", "a" }, { "\195\170", "e" }, { "\195\180", "o" }, { "\195\160", "a" },  -- circumflex, grave
+    },
+
+    -- Output guard: real Brazilian-Portuguese vulgarities generated babble must
+    -- never land on. Whole-word, lowercase. See MC_Palette_Turkish for docs.
+    babbleBlocklist = {
+        "merda", "porra", "caralho", "buceta", "foder", "puta",
+        "viado", "caceta", "piroca", "cacete", "cu", "xota", "boceta",
+    },
+
+    -- INTEGRATION-LAYER DATA (optional, ignored by MC_Babble engine)
+
+    -- concept-keyed lex sourced from data/forms.tsv (the portuguese column) via
+    -- devtools/generate_palette_forms.py. Brazilian Portuguese: verbs in the
+    -- infinitive (-ar/-er/-ir); nouns singular; adjectives masculine singular.
+    -- DRAFTS pending native-speaker review (flagged in the TSV note column).
+    lex = require("MC_PaletteFormsData").portuguese,
+
+    -- Zipf frequency order. Generated by devtools/generate_rankings.py; Portuguese
+    -- never shipped, so all forms ride the baseline-less English-frequency path.
+    -- Regenerate after editing forms.tsv; do NOT hand-edit.
+    zipf = {
+        -- GENERATED by devtools/generate_rankings.py -- do NOT hand-edit.
+        -- Order: frozen 8.16.1 baseline + frequency-anchored insertions
+        -- (see generator docstring). Regenerate after editing forms.tsv.
+        -- Rank 1-10
+        "dentro", "eu", "aquele", "voc\195\170", "este", "n\195\163o", "n\195\179s", "todo", "eles", "um",
+        -- Rank 11-20
+        "lata", "cima", "fora", "que", "quando", "n\195\163o", "quem", "novo", "como", "agora",
+        -- Rank 21-30
+        "outro", "bom", "depois", "primeiro", "saber", "ver", "dois", "fazer", "pensar", "ent\195\163o",
+        -- Rank 31-40
+        "costas", "querer", "ir", "saud\195\161vel", "onde", "precisar", "direita", "trabalhar", "ano", "dia",
+        -- Rank 41-50
+        "antes", "pegar", "muito", "dizer", "baixo", "amor", "homem", "lar", "comprido", "olhar",
+        -- Rank 51-60
+        "algo", "usar", "mesmo", "vir", "tr\195\170s", "achar", "ajuda", "velho", "jogo", "dar",
+        -- Rank 61-70
+        "casa", "novamente", "mostrar", "grande", "sentir", "guardar", "fam\195\173lia", "algu\195\169m", "esquerdo", "nome",
+        -- Rank 71-80
+        "noite", "brincar", "pouco", "diferente", "topo", "come\195\167ar", "semana", "qualquer", "pessoa", "hoje",
+        -- Rank 81-90
+        "tudo", "cheio", "viver", "ler", "ruim", "quatro", "duro", "contar", "parar", "\195\161gua",
+        -- Rank 91-100
+        "cabe\195\167a", "pequeno", "branco", "longe", "trabalho", "lado", "tentar", "sim", "correr", "abrir",
+        -- Rank 101-110
+        "esta\195\167\195\163o", "obrigado", "preto", "carro", "rosto", "cinco", "talvez", "hist\195\179ria", "esperan\195\167a", "importante",
+        -- Rank 111-120
+        "livro", "cedo", "jovem", "metade", "m\195\163o", "corpo", "comida", "sul", "c\195\180modo", "ganhar",
+        -- Rank 121-130
+        "errado", "lembrar", "amigo", "bater", "entender", "fechar", "mover", "esperar", "mulher", "perguntar",
+        -- Rank 131-140
+        "tarde", "norte", "serra", "luz", "leve", "manh\195\163", "ficar", "vermelho", "logo", "cora\195\167\195\163o",
+        -- Rank 141-150
+        "crian\195\167a", "fogo", "atr\195\161s", "pr\195\169dio", "f\195\161cil", "perto", "plano", "seis", "oeste", "frente",
+        -- Rank 151-160
+        "pronto", "filho", "trazer", "encontrar", "beb\195\170", "pai", "can\195\167\195\163o", "m\195\170s", "cortar", "campo",
+        -- Rank 161-170
+        "m\195\163e", "estrada", "cidade", "lutar", "ouvir", "pre\195\167o", "descansar", "ver\195\163o", "esposa", "forte",
+        -- Rank 171-180
+        "porrete", "compartilhar", "morto", "acontecer", "segurar", "estrela", "quebrar", "hora", "meio", "desculpa",
+        -- Rank 181-190
+        "responder", "aprender", "sozinho", "igreja", "leste", "quente", "seguir", "levantar", "azul", "dirigir",
+        -- Rank 191-200
+        "comer", "cair", "r\195\161pido", "verde", "confiar", "chave", "trocar", "irm\195\163o", "x\195\173cara", "odiar",
+        -- Rank 201-210
+        "enviar", "sangue", "cachorro", "\195\179leo", "matar", "pobre", "cobrir", "porta", "cabelo", "perder",
+        -- Rank 211-220
+        "sete", "simples", "caminhar", "filha", "morrer", "papel", "seguro", "terra", "esquecer", "mar",
+        -- Rank 221-230
+        "dormir", "dez", "caixa", "construir", "escuro", "parede", "dor", "rio", "falar", "escrever",
+        -- Rank 231-240
+        "frio", "oito", "olho", "paz", "estocar", "amanh\195\163", "marrom", "r\195\161dio", "marido", "gelo",
+        -- Rank 241-250
+        "limpo", "sol", "pistola", "pesado", "procurar", "medo", "l\195\173der", "carta", "material", "ningu\195\169m",
+        -- Rank 251-260
+        "irm\195\163", "c\195\169rebro", "ch\195\163o", "nada", "primavera", "vestir", "sonhar", "terminar", "sorte", "rico",
+        -- Rank 261-270
+        "pele", "tocar", "ontem", "beber", "peixe", "crescer", "sentar", "carregar", "planta", "inverno",
+        -- Rank 271-280
+        "doente", "pegar", "p\195\169", "nove", "caf\195\169", "tarde", "vidro", "lento", "\195\161rvore", "fundo",
+        -- Rank 281-290
+        "motor", "deitar", "tristeza", "vento", "preocupa\195\167\195\163o", "contar", "lago", "boca", "jogar", "metal",
+        -- Rank 291-300
+        "puxar", "empurrar", "animal", "entrar", "pedra", "janela", "sacola", "acampamento", "gato", "decidir",
+        -- Rank 301-310
+        "presente", "madeira", "ponte", "jardim", "vivo", "cavalo", "mapa", "rede", "ve\195\173culo", "acordar",
+        -- Rank 311-320
+        "canto", "fazenda", "consertar", "voar", "surpresa", "seco", "borda", "les\195\163o", "bra\195\167o", "rem\195\169dio",
+        -- Rank 321-330
+        "montanha", "atirar", "provar", "ch\195\161", "combust\195\173vel", "oi", "c\195\169u", "barco", "cem", "trilha",
+        -- Rank 331-340
+        "prometer", "chuva", "cansado", "inimigo", "floresta", "lua", "pular", "amarelo", "macio", "fuma\195\167a",
+        -- Rank 341-350
+        "ensinar", "buraco", "perna", "leite", "neve", "fraco", "corrente", "cozinhar", "cozinha", "silencioso",
+        -- Rank 351-360
+        "estranho", "caminh\195\163o", "p\195\161ssaro", "tigela", "galinha", "carne", "pesco\195\167o", "camisa", "laranja", "\195\161lcool",
+        -- Rank 361-370
+        "sal", "cuidadoso", "perigo", "vazio", "convidado", "garrafa", "queijo", "fruta", "ferramenta", "sujo",
+        -- Rank 371-380
+        "alegria", "barulho", "prato", "al\195\173vio", "arroz", "telhado", "vergonha", "calmo", "esconder", "arma",
+        -- Rank 381-390
+        "molhado", "queimar", "chap\195\169u", "barulhento", "peito", "rosa", "fechadura", "nariz", "pl\195\161stico", "amarrar",
+        -- Rank 391-400
+        "p\195\163o", "levantar", "ombro", "roda", "arbusto", "ca\195\167ar", "cheirar", "dedo", "cinza", "afiado",
+        -- Rank 401-410
+        "osso", "roupa", "port\195\163o", "nuvem", "ovo", "lavar", "faminto", "tio", "areia", "linha",
+        -- Rank 411-420
+        "rel\195\179gio", "orelha", "raiva", "cinto", "flor", "est\195\180mago", "primo", "poeira", "faca", "raiz",
+        -- Rank 421-430
+        "roubar", "panela", "frigideira", "grama", "mel", "gancho", "semente", "espada", "l\195\173ngua", "casaco",
+        -- Rank 431-440
+        "suco", "seio", "sair", "couro", "lobo", "infec\195\167\195\163o", "joelho", "armadilha", "roxo", "morder",
+        -- Rank 441-450
+        "m\195\161scara", "meianoite", "arco", "tchau", "escudo", "garganta", "desconhecido", "outono", "respirar", "bala",
+        -- Rank 451-460
+        "juntar", "av\195\180", "sapato", "ferida", "palma", "borracha", "cobra", "escalar", "cavar", "febre",
+        -- Rank 461-470
+        "folha", "cerca", "unha", "prego", "nadar", "caverna", "carne", "bota", "confus\195\163o", "ovelha",
+        -- Rank 471-480
+        "gr\195\163o", "barril", "rato", "cinza", "tia", "martelo", "cultivo", "sopa", "vaca", "av\195\179",
+        -- Rank 481-490
+        "porco", "escada", "flecha", "l\195\161bio", "lama", "cervo", "curar", "barriga", "pulm\195\163o", "luto",
+        -- Rank 491-500
+        "veneno", "dente", "cesta", "cobertor", "balde", "dedo", "corda", "gritar", "l\195\162mpada", "noz",
+        -- Rank 501-510
+        "tecido", "recipiente", "garfo", "colheita", "escada", "sobrinho", "polegar", "pulso", "queixo", "bicicleta",
+        -- Rank 511-520
+        "mand\195\173bula", "agulha", "tornozelo", "baga", "bochecha", "cego", "legume", "pote", "saco", "vela",
+        -- Rank 521-530
+        "colher", "testa", "cotovelo", "calcanhar", "sobrinha", "machado", "cicatriz", "inseto", "sedento", "tocha",
+        -- Rank 531-540
+        "luva", "sangrar", "lan\195\167a", "cal\195\167a", "bebida", "vizinho", "solid\195\163o", "cogumelo", "nojo", "irm\195\163o",
+        -- Rank 541-547
+        "meia", "costela", "p\195\161", "semear", "bandagem", "hematoma", "umbigo",
+    },
+
+    -- CULTURAL BLOCK -- see MC_Palette_French for full schema docs.
+    cultural = {
+        { en = "Everything is fine, all good",         l2 = "Tudo bem",              tags = {} },
+        { en = "It is no problem at all",              l2 = "N\195\163o tem problema", tags = {} },
+        { en = "God willing, if God permits it",       l2 = "Se Deus quiser",        tags = {"modal"} },
+        { en = "Enjoy your meal, everyone",            l2 = "Bom apetite",           tags = {"meal"} },
+        { en = "Come on, let us get going now",        l2 = "Vamos embora",          tags = {"action"} },
+        { en = "Take care, go with God",               l2 = "Fica com Deus",         tags = {"farewell"} },
+    },
+}
+
+-- Self-register with the language system.
+require("MC_LangRegistry").register("portuguese", portuguese)
+
+return portuguese
