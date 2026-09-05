@@ -1,11 +1,7 @@
---[[
-================================================================================
-    MongooseChat public compatibility API (v1)
-
-    This is an observe-only surface for other mods. Event payloads are copies;
-    changing one cannot change MongooseChat's own send or rendered line.
-================================================================================
-]]
+--- MongooseChat public compatibility API.
+-- This is an observe-only surface for other mods. Event payloads are copies;
+-- changing one cannot change MongooseChat's own send or rendered line.
+-- @module MC_API
 
 local MC_Core = require("MC_Core")
 local MC_Incident = require("MC_Incident")
@@ -104,8 +100,12 @@ end
 declareEvent("MCOutboundMessage")
 declareEvent("MCInboundMessage")
 
--- Guaranteed subscription surface. Each handler gets its own payload copy;
+--- Subscribe to a MongooseChat event.
+-- Each handler gets its own payload copy;
 -- one broken handler cannot stop the rest. Tokens are opaque to callers.
+-- @param eventName `MCOutboundMessage` or `MCInboundMessage`.
+-- @param handler Function called with one event payload table.
+-- @return An opaque subscription token, or `nil` for invalid arguments.
 function MC_API.subscribe(eventName, handler)
     if not EVENT_NAMES[eventName] or type(handler) ~= "function" then return nil end
     registry.nextToken = registry.nextToken + 1
@@ -117,6 +117,9 @@ function MC_API.subscribe(eventName, handler)
     return token
 end
 
+--- Remove an event subscription.
+-- @param token The opaque token returned by `subscribe`.
+-- @return `true` when the subscription was removed; otherwise `false`.
 function MC_API.unsubscribe(token)
     if type(token) ~= "table" or not EVENT_NAMES[token.eventName] then return false end
     local list = subscribers[token.eventName]
@@ -152,6 +155,8 @@ function MC_API._fire(eventName, payload)
     return not failed
 end
 
+--- Get the compatibility API version.
+-- @return The API version number.
 function MC_API.version()
     return MC_API.VERSION
 end
@@ -166,17 +171,23 @@ local function clientModule(name)
     return nil
 end
 
+--- Get the current input channel.
+-- @return The channel name, or `nil` outside a ready client.
 function MC_API.currentChannel()
     local module = clientModule("MC_Input")
     return module and type(module.channel) == "string" and module.channel or nil
 end
 
+--- Get the most recent MongooseChat slash prefix.
+-- @return The slash prefix, or `nil` outside a ready client.
 function MC_API.lastSlashPrefix()
     local module = clientModule("MC_Input")
     return module and type(module.lastSlashPrefix) == "string"
         and module.lastSlashPrefix or nil
 end
 
+--- Check whether the MongooseChat window is open.
+-- @return `true` when the window is visible; otherwise `false`.
 function MC_API.isWindowOpen()
     local module = clientModule("MC_ChatWindow")
     local window = module and module.instance or nil
@@ -185,6 +196,8 @@ function MC_API.isWindowOpen()
     return ok and visible == true
 end
 
+--- Check whether the MongooseChat input has focus.
+-- @return `true` when the input has focus; otherwise `false`.
 function MC_API.isChatFocused()
     local module = clientModule("MC_ChatWindow")
     local window = module and module.instance or nil
@@ -193,6 +206,8 @@ function MC_API.isChatFocused()
     return ok and focused == true
 end
 
+--- Get the local player's identity colour.
+-- @return A fresh RGB table, or `nil` when the colour is not ready.
 function MC_API.identityColor()
     local module = clientModule("MC_IdentityColor")
     if not module or type(module.current) ~= "function" then return nil end
@@ -201,6 +216,8 @@ function MC_API.identityColor()
     return copyTable(color)
 end
 
+--- Check whether the local player is masked.
+-- @return `true` when the local player is masked; otherwise `false`.
 function MC_API.isMasked()
     local module = clientModule("MC_Anonymity")
     if not module or type(module.isMasked) ~= "function"
@@ -211,6 +228,8 @@ function MC_API.isMasked()
     return ok and masked == true
 end
 
+--- Check whether the local player is deaf.
+-- @return `true` when the local player is deaf; otherwise `false`.
 function MC_API.isDeaf()
     local module = clientModule("MC_Anonymity")
     if not module or type(module.localPlayerIsDeaf) ~= "function" then return false end
@@ -218,6 +237,9 @@ function MC_API.isDeaf()
     return ok and deaf == true
 end
 
+--- Check a channel's sandbox switch.
+-- @param name Channel name without the `Enabled` suffix.
+-- @return `true` or `false`, or `nil` when the channel has no switch.
 function MC_API.channelEnabled(name)
     if type(name) ~= "string" or name == "" then return nil end
     local module = clientModule("MC_Config")

@@ -201,6 +201,7 @@ local function canonicalAdminStream()
     return adminStream, true
 end
 
+--- Check whether a tab view is verified as Admin.
 -- @return isAdmin, authoritative
 local function verifiedAdminTabView(view)
     if type(view) ~= "table" or type(view.chatStreams) ~= "table" then
@@ -329,6 +330,7 @@ local function resolvedChatTypeName(chatType)
     return nil, false
 end
 
+--- Check whether a message is verified as Admin.
 -- ChatMessage exposes getChat(); ChatBase exposes getType()/getTabID(). A
 -- numeric destination tab is only a consistency check against ChatBase,
 -- never evidence of Admin by itself.

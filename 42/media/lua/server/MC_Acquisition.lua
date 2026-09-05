@@ -1514,7 +1514,7 @@ local function noteVoice(record, speakerUsername)
     return true
 end
 
--- Records exposure for a batch of tokens heard in a single utterance.
+--- Records exposure for a batch of tokens heard in a single utterance.
 --
 -- @param username   listener's Steam username
 -- @param sourceLang  speaker's language (case-insensitive)
@@ -2102,7 +2102,7 @@ function MC_Acquisition.getAllTokens(username, sourceLang)
     return out
 end
 
--- Count of palette-valid acquired L2 forms plus the palette's lexicalization
+--- Count palette-valid acquired L2 forms.
 -- total -- the shared scan behind estimateComprehension and the batch-tail
 -- Moments meta (v8.16.1), one definition of "comprehension fraction".
 -- @param palette  the palette object (.lex sizes the denominator)
@@ -2181,7 +2181,7 @@ function MC_Acquisition.acquiredCountForCore(username, sourceLang, palette)
     return acquired, total
 end
 
--- Comprehension percentage: fraction of the palette's dictionary the listener
+--- Get the listener's comprehension percentage.
 -- has acquired, computed on demand from the exposure table (never stored, so
 -- /comp always reflects actual data, never drifts from it).
 -- @return percentage 0..100, or nil if the language is unknown/empty

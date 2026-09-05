@@ -795,7 +795,7 @@ local function buildRoster()
     return roster
 end
 
--- Build the bleed-through set for a single message.
+--- Build the bleed-through set for a single message.
 -- @param message string
 -- @return table { ["word"] = true, ... }
 local function buildBleedThrough(message)
