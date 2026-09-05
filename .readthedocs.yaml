@@ -9,10 +9,16 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.13"
+  apt_packages:
+    - lua5.4
+    - luarocks
+  jobs:
+    post_install:
+      - luarocks install ldoc
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
-   configuration: docs/conf.py
+  configuration: docs/source/conf.py
 
 # Optionally, but recommended,
 # declare the Python requirements required to build your documentation
