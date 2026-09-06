@@ -1,7 +1,7 @@
 --- MongooseChat public compatibility API.
 -- This is an observe-only surface for other mods. Event payloads are copies;
 -- changing one cannot change MongooseChat's own send or rendered line.
--- @module MC_API
+--- @module MC_API
 
 local MC_Core = require("MC_Core")
 local MC_Incident = require("MC_Incident")
