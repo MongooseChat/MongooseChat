@@ -31,5 +31,3 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['../_static']
 
 lua_source_path = ['../../42/media/lua']
-
-lua_source_use_emmy_lua_syntax = False
